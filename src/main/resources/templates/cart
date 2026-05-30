@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Your Shopping Cart</h1>
+        <nav>
+            <a href="/" th:href="@{/}">Home</a>
+            <a href="/products" th:href="@{/products}">Products</a>
+        </nav>
+    </header>
+    <main>
+        <div class="cart-items" th:if="${cartItems.size() > 0}">
+            <ul>
+                <li th:each="item : ${cartItems}">
+                    <img th:src="${item.product.imageUrl}" alt="Product Image" />
+                    <h2 th:text="${item.product.name}"></h2>
+                    <p th:text="${item.product.description}"></p>
+                    <p>Price: $<span th:text="${item.product.price}"></span></p>
+                    <p>Quantity: <span th:text="${item.quantity}"></span></p>
+                    <button th:onclick="'removeFromCart(' + ${item.product.id} + ')'">Remove</button>
+                </li>
+            </ul>
+            <h3>Total Price: $<span th:text="${totalPrice}"></span></h3>
+            <button th:onclick="'checkout()'">Proceed to Checkout</button>
+        </div>
+        <div th:if="${cartItems.size() == 0}">
+            <p>Your cart is empty. Start adding products!</p>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Electronics Store</p>
+    </footer>
+    <script src="/js/script.js"></script>
+</body>
+</html>
