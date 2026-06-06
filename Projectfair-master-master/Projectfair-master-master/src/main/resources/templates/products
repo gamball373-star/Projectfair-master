@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products - Electronics Store</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Electronics Store</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/cart}">Cart</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Available Products</h2>
+        <div class="product-list">
+            <div th:each="product : ${products}" class="product-item">
+                <img th:src="@{${product.imageUrl}}" alt="Product Image" />
+                <h3 th:text="${product.name}">Product Name</h3>
+                <p th:text="${product.description}">Product Description</p>
+                <p>Price: <span th:text="${product.price}">0.00</span></p>
+                <a th:href="@{/product-detail(id=${product.id})}">View Details</a>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Electronics Store</p>
+    </footer>
+</body>
+</html>
