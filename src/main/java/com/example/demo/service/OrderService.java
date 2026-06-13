@@ -2,9 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.model.Order;
 import com.example.demo.repository.OrderRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -14,11 +16,12 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public void createOrder(Order order) {
+    public Order createOrder(Order order) {
         if (order.getQuantity() <= 0) {
             throw new IllegalArgumentException("Количество товара должно быть больше нуля!");
         }
         orderRepository.save(order);
+        return order;
     }
 
     public List<Order> getAllOrders() {
@@ -39,5 +42,21 @@ public class OrderService {
 
     public List<Order> getOrdersByUserId(Long userId) {
         return orderRepository.findByUserId(userId);
+    }
+
+    public Optional<Order> getOrderByIdOptional(Long id) {
+        return Optional.empty();
+    }
+
+    public List<Order> getOrdersByProductId(Long productId) {
+        return List.of();
+    }
+
+    public Order updateOrder(Long id, @Valid Order orderDetails) {
+        return orderDetails;
+    }
+
+    public String updateOrderStatus(Long id, String status) {
+        return status;
     }
 }

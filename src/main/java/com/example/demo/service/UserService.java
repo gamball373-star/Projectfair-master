@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -38,19 +41,34 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь с именем " + username + " не найден!"));
     }
 
-    public void updateUser(User user) {
+    public String updateUser(Long id, User user) {
         if (!userRepository.findById(user.getId()).isPresent()) {
             throw new IllegalArgumentException("Пользователь с ID " + user.getId() + " не найден!");
         }
         userRepository.save(user);
+        return null;
     }
 
-    public void deleteUser(Long userId) {
+    public boolean deleteUser(Long userId) {
         if (!userRepository.findById(userId).isPresent()) {
             throw new IllegalArgumentException("Пользователь с ID " + userId + " не найден!");
         }
         userRepository.deleteById(userId);
+        return false;
+    }
+
+    public Optional<User> getUserByIdOptional(Long id) {
+        return Optional.empty();
+    }
+
+    public String updateUserProfile(Long id, Map<String, String> updates) {
+        return "";
+    }
+
+    public Optional<User> getUserByEmailOptional(String email) {
+        return Optional.empty();
     }
 }
-    }
-}
+
+
+
