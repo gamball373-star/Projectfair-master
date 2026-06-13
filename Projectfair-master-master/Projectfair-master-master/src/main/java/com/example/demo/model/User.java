@@ -1,17 +1,16 @@
 package com.example.demo.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -22,7 +21,10 @@ public class User {
     @Column(name = "username", nullable = false, length = 50, unique = true)
     @NotBlank(message = "Имя пользователя не может быть пустым")
     @Size(min = 3, max = 50, message = "Имя пользователя должно быть от 3 до 50 символов")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Имя пользователя может содержать только букву, цифры, дефис и подчеркивание")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9_-]+$",
+            message = "Имя пользователя может содержать только буквы, цифры, дефис и подчеркивание"
+    )
     private String username;
 
     @Column(name = "email", nullable = false, length = 100, unique = true)
@@ -38,19 +40,29 @@ public class User {
 
     @Column(name = "first_name", length = 50)
     @Size(max = 50, message = "Имя не должно превышать 50 символов")
+    @Pattern(
+            regexp = "^[A-Za-zА-Яа-яЁё\\s-]*$",
+            message = "Имя может содержать только буквы"
+    )
     private String firstName;
 
     @Column(name = "last_name", length = 50)
     @Size(max = 50, message = "Фамилия не должна превышать 50 символов")
+    @Pattern(
+            regexp = "^[A-Za-zА-Яа-яЁё\\s-]*$",
+            message = "Фамилия может содержать только буквы"
+    )
     private String lastName;
 
     @Column(name = "phone", length = 20)
-    @Pattern(regexp = "^[+]?[0-9]{10,20}$", message = "Номер телефона должен содержать от 10 до 20 цифр и может начинаться с +")
+    @Pattern(
+            regexp = "^[+]?[0-9]{10,20}$",
+            message = "Номер телефона должен содержать от 10 до 20 цифр и может начинаться с +"
+    )
     private String phone;
 
     @Column(name = "role", nullable = false, length = 50)
-    @NotNull(message = "Роль не может быть пустой")
     @Enumerated(EnumType.STRING)
-    private Role role;
-
+    @NotNull(message = "Роль не может быть пустой")
+    private Role role = Role.USER;
 }
