@@ -17,4 +17,12 @@ public class Order {
     public Long getUserId() { return userId; }
     public Long getProductId() { return productId; }
     public int getQuantity() { return quantity; }
+
+    public Object getTotalPrice() {
+        return null;
+    }
+
+    public Object getStatus() {
+        return null;
+    }
 }

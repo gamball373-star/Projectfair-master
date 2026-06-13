@@ -1,9 +1,13 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity // Указывает, что этот класс связан с таблицей в БД
 @Table(name = "products") // Имя таблицы в базе данных
+@Getter
+@Setter
 public class Product {
 
     @Id // Маркер первичного ключа (Primary Key)
