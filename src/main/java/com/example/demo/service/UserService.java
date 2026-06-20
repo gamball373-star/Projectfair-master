@@ -49,12 +49,8 @@ public class UserService {
         return null;
     }
 
-    public boolean deleteUser(Long userId) {
-        if (!userRepository.findById(userId).isPresent()) {
-            throw new IllegalArgumentException("Пользователь с ID " + userId + " не найден!");
-        }
+    public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
-        return false;
     }
 
     public Optional<User> getUserByIdOptional(Long id) {

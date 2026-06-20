@@ -152,20 +152,22 @@ public class UserController {
      * DELETE /api/users/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            boolean deleted = userService.deleteUser(id);
-            if (deleted) {
-                response.put("message", "Пользователь с ID " + id + " успешно удален!");
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            response.put("error", "Пользователь с ID " + id + " не найден!");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+//        try {
+//            deleted =
+//            if (deleted) {
+//                response.put("message", "Пользователь с ID " + id + " успешно удален!");
+//                return new ResponseEntity<>(response, HttpStatus.OK);
+//            }else {
+//                response.put("error", "Пользователь с ID " + id + " не найден!");
+//                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//            }
+//        } catch (Exception e) {
+//            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+//            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+        return ResponseEntity.noContent().build();
     }
 
 }

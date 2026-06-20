@@ -35,8 +35,8 @@ public class OrderController {
             response.put("userId", createdOrder.getUserId());
             response.put("productId", createdOrder.getProductId());
             response.put("quantity", createdOrder.getQuantity());
-            response.put("totalPrice", createdOrder.getTotalPrice());
-            response.put("status", createdOrder.getStatus());
+//            response.put("totalPrice", createdOrder.getTotalPrice());
+//            response.put("status", createdOrder.getStatus());
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             response.put("error", "Ошибка при создании заказа: " + e.getMessage());

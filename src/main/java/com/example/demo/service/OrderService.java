@@ -33,11 +33,12 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Заказ с ID " + orderId + " не найден!"));
     }
 
-    public void deleteOrder(Long orderId) {
+    public boolean deleteOrder(Long orderId) {
         if (!orderRepository.findById(orderId).isPresent()) {
             throw new IllegalArgumentException("Заказ с ID " + orderId + " не найден!");
         }
         orderRepository.deleteById(orderId);
+        return false;
     }
 
     public List<Order> getOrdersByUserId(Long userId) {
@@ -58,5 +59,49 @@ public class OrderService {
 
     public String updateOrderStatus(Long id, String status) {
         return status;
+    }
+
+    public String cancelOrder(Long id) {
+        return "";
+    }
+
+    public String completeOrder(Long id) {
+        return "";
+    }
+
+    public List<Order> getOrdersByStatus(String status) {
+        return List.of();
+    }
+
+    public long getTotalOrdersCount() {
+        return 0;
+    }
+
+    public long getPendingOrdersCount() {
+        return 0;
+    }
+
+    public long getCompletedOrdersCount() {
+        return 0;
+    }
+
+    public double getTotalRevenue() {
+        return 0;
+    }
+
+    public double getUserOrdersRevenue(Long userId) {
+        return 0;
+    }
+
+    public List<Order> searchOrders(Long userId, String status) {
+        return List.of();
+    }
+
+    public Optional<Order> getHighestValueOrder() {
+        return Optional.empty();
+    }
+
+    public double getAverageOrderValue() {
+        return 0;
     }
 }
