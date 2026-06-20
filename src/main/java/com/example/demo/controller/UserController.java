@@ -3,75 +3,171 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.model.Role;
 import com.example.demo.service.UserService;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api/users")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
-    private final UserService userService;
+
+    @Autowired
+    private UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    public String registerUser(String username, String email, Role role) {
+    /**
+     * Register a new user
+     * POST /api/users/register
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, String>> registerUser(@Valid @RequestBody User user) {
+        Map<String, String> response = new HashMap<>();
         try {
-            User user = new User(null, username, email, role);
             userService.registerUser(user);
-            return "Пользователь '" + username + "' успешно зарегистрирован!";
+            response.put("message", "Пользователь '" + user.getUsername() + "' успешно зарегистрирован!");
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return "Ошибка при регистрации: " + e.getMessage();
+            response.put("error", "Ошибка при регистрации: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public List<User> viewAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    public String viewUserById(Long userId) {
+    /**
+     * Get all users
+     * GET /api/users
+     */
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
         try {
-            User user = userService.getUserById(userId);
-            return "ID: " + user.getId() + 
-                   ", Имя: " + user.getUsername() + 
-                   ", Email: " + user.getEmail() + 
-                   ", Роль: " + user.getRole();
-        } catch (IllegalArgumentException e) {
-            return "Ошибка: " + e.getMessage();
+            List<User> users = userService.getAllUsers();
+            if (users.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public String updateUser(Long userId, String username, String email) {
+    /**
+     * Get user by ID
+     * GET /api/users/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            User user = userService.getUserById(userId);
-            user.setUsername(username);
-            user.setEmail(email);
-            userService.updateUser(user);
-            return "Пользователь успешно обновлен!";
-        } catch (IllegalArgumentException e) {
-            return "Ошибка при обновлении: " + e.getMessage();
+            Optional<User> user = userService.getUserByIdOptional(id);
+            if (user.isPresent()) {
+                return new ResponseEntity<>(user.get(), HttpStatus.OK);
+            }
+            response.put("error", "Пользователь с ID " + id + " не найден!");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public String deleteUser(Long userId) {
+
+
+    /**
+     * Get user by email
+     * GET /api/users/email/{email}
+     */
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            userService.deleteUser(userId);
-            return "Пользователь с ID " + userId + " успешно удален!";
-        } catch (IllegalArgumentException e) {
-            return "Ошибка при удалении: " + e.getMessage();
+            Optional<User> user = userService.getUserByEmailOptional(email);
+            if (user.isPresent()) {
+                return new ResponseEntity<>(user.get(), HttpStatus.OK);
+            }
+            response.put("error", "Пользователь с email '" + email + "' не найден!");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public String findUserByUsername(String username) {
+    /**
+     * Update user information
+     * PUT /api/users/{id}
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
+        Map<String, String> response = new HashMap<>();
         try {
-            User user = userService.getUserByUsername(username);
-            return "ID: " + user.getId() + 
-                   ", Имя: " + user.getUsername() + 
-                   ", Email: " + user.getEmail() + 
-                   ", Роль: " + user.getRole();
+            String result = userService.updateUser(id, userDetails);
+            response.put("message", result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return "Ошибка: " + e.getMessage();
+            response.put("error", "Ошибка при обновлении: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-}
+
+    /**
+     * Update user profile
+     * PATCH /api/users/{id}/profile
+     */
+    @PatchMapping("/{id}/profile")
+    public ResponseEntity<Map<String, String>> updateUserProfile(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            String result = userService.updateUserProfile(id, updates);
+            response.put("message", result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            response.put("error", "Ошибка при обновлении профиля: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Delete user
+     * DELETE /api/users/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+//        try {
+//            deleted =
+//            if (deleted) {
+//                response.put("message", "Пользователь с ID " + id + " успешно удален!");
+//                return new ResponseEntity<>(response, HttpStatus.OK);
+//            }else {
+//                response.put("error", "Пользователь с ID " + id + " не найден!");
+//                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//            }
+//        } catch (Exception e) {
+//            response.put("error", "Внутренняя ошибка сервера: " + e.getMessage());
+//            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+        return ResponseEntity.noContent().build();
+    }
+
 }
